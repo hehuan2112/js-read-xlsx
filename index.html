@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Read Excel in JS</title>
+</head>
+<body>
+<div>
+    <fieldset id="input_panel">
+        <legend>INPUT</legend>
+        <p>
+            Uploaded any XLSX file in the input box, or
+            <a href="./data.xlsx">download a sample file for test</a>.
+        </p>
+        <input type="file" name="xls" id="input_xls">
+    </fieldset>
+    <div style="display: flex; flex-direction: row; width: 100%; margin-top: 10px;">
+        <fieldset>
+            <legend>FILE CONTENT</legend>
+            <div id="result_panel">
+    
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>FILE JSON</legend>
+            <pre id="json_panel"></pre>
+        </fieldset>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.2/xlsx.min.js"></script>
+<script>
+
+var wb = null;
+async function handleFileAsync(event) {
+    const file = event.target.files[0];
+    const data = await file.arrayBuffer();
+    wb = XLSX.read(data);
+
+    for (let i = 0; i < wb.SheetNames.length; i++) {
+        const sheetName = wb.SheetNames[i];
+        var ws = wb.Sheets[sheetName];
+
+        // show the HTML format 
+        document.getElementById('result_panel').innerHTML += '<h4>' + sheetName + '</h4>';
+        document.getElementById('result_panel').innerHTML += XLSX.utils.sheet_to_html(ws);
+
+        // show the JSON format 
+        document.getElementById('json_panel').innerHTML += '<h4>' + sheetName + '</h4>';
+        document.getElementById('json_panel').innerHTML += JSON.stringify(XLSX.utils.sheet_to_json(ws), null, 2) + '\n\n';
+    }
+}
+
+var input_xls = document.getElementById('input_xls');
+input_xls.addEventListener("change", handleFileAsync, false);
+</script>
+</body>
+</html>
